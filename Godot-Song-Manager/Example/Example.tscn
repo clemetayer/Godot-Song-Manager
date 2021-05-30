@@ -1,0 +1,192 @@
+[gd_scene load_steps=3 format=2]
+
+[ext_resource path="res://SongManager/SongManager.tscn" type="PackedScene" id=1]
+[ext_resource path="res://Example/Example.gd" type="Script" id=2]
+
+[node name="Example" type="Node2D"]
+script = ExtResource( 2 )
+
+[node name="SongManager" parent="." instance=ExtResource( 1 )]
+
+[node name="Menu" type="Control" parent="."]
+margin_right = 40.0
+margin_bottom = 40.0
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Center" type="CenterContainer" parent="Menu"]
+margin_left = -512.794
+margin_top = -300.0
+margin_right = 511.206
+margin_bottom = 300.0
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="VSplit" type="VBoxContainer" parent="Menu/Center"]
+margin_left = 284.0
+margin_top = 207.0
+margin_right = 739.0
+margin_bottom = 393.0
+size_flags_horizontal = 3
+size_flags_vertical = 3
+custom_constants/separation = 10
+
+[node name="Songs" type="HBoxContainer" parent="Menu/Center/VSplit"]
+margin_right = 455.0
+margin_bottom = 48.0
+custom_constants/separation = 10
+
+[node name="Song1" type="VBoxContainer" parent="Menu/Center/VSplit/Songs"]
+margin_right = 222.0
+margin_bottom = 48.0
+
+[node name="Song1Button" type="Button" parent="Menu/Center/VSplit/Songs/Song1"]
+margin_right = 222.0
+margin_bottom = 20.0
+text = "Song1"
+
+[node name="Checks" type="HBoxContainer" parent="Menu/Center/VSplit/Songs/Song1"]
+margin_top = 24.0
+margin_right = 222.0
+margin_bottom = 48.0
+
+[node name="Song1Chords" type="CheckBox" parent="Menu/Center/VSplit/Songs/Song1/Checks"]
+margin_right = 72.0
+margin_bottom = 24.0
+text = "Chords"
+
+[node name="Song1Bass" type="CheckBox" parent="Menu/Center/VSplit/Songs/Song1/Checks"]
+margin_left = 76.0
+margin_right = 134.0
+margin_bottom = 24.0
+text = "Bass"
+
+[node name="Song1Arpeggio" type="CheckBox" parent="Menu/Center/VSplit/Songs/Song1/Checks"]
+margin_left = 138.0
+margin_right = 222.0
+margin_bottom = 24.0
+text = "Arpeggio"
+
+[node name="VSeparator" type="VSeparator" parent="Menu/Center/VSplit/Songs"]
+margin_left = 232.0
+margin_right = 236.0
+margin_bottom = 48.0
+
+[node name="Song2" type="VBoxContainer" parent="Menu/Center/VSplit/Songs"]
+margin_left = 246.0
+margin_right = 455.0
+margin_bottom = 48.0
+
+[node name="Song2Button" type="Button" parent="Menu/Center/VSplit/Songs/Song2"]
+margin_right = 209.0
+margin_bottom = 20.0
+text = "Song 2"
+
+[node name="Checks" type="HBoxContainer" parent="Menu/Center/VSplit/Songs/Song2"]
+margin_top = 24.0
+margin_right = 209.0
+margin_bottom = 48.0
+
+[node name="Song2Chords" type="CheckBox" parent="Menu/Center/VSplit/Songs/Song2/Checks"]
+margin_right = 72.0
+margin_bottom = 24.0
+text = "Chords"
+
+[node name="Song2Bass" type="CheckBox" parent="Menu/Center/VSplit/Songs/Song2/Checks"]
+margin_left = 76.0
+margin_right = 134.0
+margin_bottom = 24.0
+text = "Bass"
+
+[node name="Song2Drums" type="CheckBox" parent="Menu/Center/VSplit/Songs/Song2/Checks"]
+margin_left = 138.0
+margin_right = 209.0
+margin_bottom = 24.0
+text = "Drums"
+
+[node name="VSeparator" type="HSeparator" parent="Menu/Center/VSplit"]
+margin_top = 58.0
+margin_right = 455.0
+margin_bottom = 62.0
+
+[node name="Transitions" type="VBoxContainer" parent="Menu/Center/VSplit"]
+margin_top = 72.0
+margin_right = 455.0
+margin_bottom = 186.0
+custom_constants/separation = 10
+
+[node name="TransitionType" type="OptionButton" parent="Menu/Center/VSplit/Transitions"]
+margin_right = 455.0
+margin_bottom = 20.0
+text = "Filter transition"
+items = [ "Filter transition", null, false, 0, false, "Volume transition", null, false, 0, false, "Instant transition", null, false, 0, false ]
+selected = 0
+
+[node name="TransitionTimeType" type="OptionButton" parent="Menu/Center/VSplit/Transitions"]
+margin_top = 30.0
+margin_right = 455.0
+margin_bottom = 50.0
+text = "Time unit : seconds"
+items = [ "Time unit : seconds", null, false, 0, null, "Time unit : beats", null, false, 1, null, "Time unit : bars", null, false, 2, null ]
+selected = 0
+
+[node name="TransitionWait" type="OptionButton" parent="Menu/Center/VSplit/Transitions"]
+margin_top = 60.0
+margin_right = 455.0
+margin_bottom = 80.0
+text = "Don't wait"
+items = [ "Don't wait", null, false, 0, null, "Wait for next beat", null, false, 1, null, "Wait for next bar", null, false, 2, null ]
+selected = 0
+
+[node name="CenterTimes" type="CenterContainer" parent="Menu/Center/VSplit/Transitions"]
+margin_top = 90.0
+margin_right = 455.0
+margin_bottom = 114.0
+
+[node name="Times" type="HBoxContainer" parent="Menu/Center/VSplit/Transitions/CenterTimes"]
+margin_left = 2.0
+margin_right = 453.0
+margin_bottom = 24.0
+custom_constants/separation = 10
+
+[node name="StartLabel" type="Label" parent="Menu/Center/VSplit/Transitions/CenterTimes/Times"]
+margin_top = 5.0
+margin_right = 125.0
+margin_bottom = 19.0
+text = "Transition in time : "
+
+[node name="StartTime" type="SpinBox" parent="Menu/Center/VSplit/Transitions/CenterTimes/Times"]
+margin_left = 135.0
+margin_right = 209.0
+margin_bottom = 24.0
+
+[node name="VSeparator" type="VSeparator" parent="Menu/Center/VSplit/Transitions/CenterTimes/Times"]
+margin_left = 219.0
+margin_right = 223.0
+margin_bottom = 24.0
+
+[node name="EndLabel" type="Label" parent="Menu/Center/VSplit/Transitions/CenterTimes/Times"]
+margin_left = 233.0
+margin_top = 5.0
+margin_right = 367.0
+margin_bottom = 19.0
+text = "Transition out time : "
+
+[node name="EndTime" type="SpinBox" parent="Menu/Center/VSplit/Transitions/CenterTimes/Times"]
+margin_left = 377.0
+margin_right = 451.0
+margin_bottom = 24.0
+
+[node name="Camera2D" type="Camera2D" parent="."]
+current = true
+
+[connection signal="pressed" from="Menu/Center/VSplit/Songs/Song1/Song1Button" to="." method="_on_Song1Button_pressed"]
+[connection signal="toggled" from="Menu/Center/VSplit/Songs/Song1/Checks/Song1Chords" to="." method="_on_Song1Chords_toggled"]
+[connection signal="toggled" from="Menu/Center/VSplit/Songs/Song1/Checks/Song1Bass" to="." method="_on_Song1Bass_toggled"]
+[connection signal="toggled" from="Menu/Center/VSplit/Songs/Song1/Checks/Song1Arpeggio" to="." method="_on_Song1Arpeggio_toggled"]
+[connection signal="pressed" from="Menu/Center/VSplit/Songs/Song2/Song2Button" to="." method="_on_Song2Button_pressed"]
+[connection signal="toggled" from="Menu/Center/VSplit/Songs/Song2/Checks/Song2Chords" to="." method="_on_Song2Chords_toggled"]
+[connection signal="toggled" from="Menu/Center/VSplit/Songs/Song2/Checks/Song2Bass" to="." method="_on_Song2Bass_toggled"]
+[connection signal="toggled" from="Menu/Center/VSplit/Songs/Song2/Checks/Song2Drums" to="." method="_on_Song2Drums_toggled"]

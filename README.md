@@ -10,6 +10,9 @@ This tool was intended for a personnal use, but maybe this might be useful for s
 
 As a consequence, I will mostly maintain it for myself, however, I tried to make it as comprehensible as possible and fairly customizable.
 
+# Unit testing
+Unit tests were made using WAT 5.0.1 Plugin : https://github.com/AlexDarigan/WAT
+
 # Example
 Since the logic behind this tool can be hard to understand, an example is provided to show how this tool can be used. This is probably way better to figure out how it works than the following explanation.
 

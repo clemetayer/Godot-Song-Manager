@@ -1,5 +1,5 @@
 extends Node
-class_name TransitionTemplate
+class_name Transition
 
 # should take care of transition tween creation and 
 
@@ -9,8 +9,8 @@ export(time_type) var TIME_TYPE = time_type.time
 export(bool) var WAIT_NEXT_BEAT = false
 export(bool) var WAIT_NEXT_BAR = false
 
-export(float) var FADE_IN_TIME # how much time new song should take to fade in
-export(float) var FADE_OUT_TIME # how much time old song should take to fade in
+export(float) var FADE_IN_TIME = 0 # how much time new song should take to fade in
+export(float) var FADE_OUT_TIME = 0 # how much time old song should take to fade in
 
 # computes the transition in/out times [transition_in,transition_out] in seconds
 # default function, can be overrided (by re-defining it in children classes)

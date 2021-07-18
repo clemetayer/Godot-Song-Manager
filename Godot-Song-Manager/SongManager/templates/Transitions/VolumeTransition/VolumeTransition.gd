@@ -1,4 +1,5 @@
 extends Transition
+class_name VolumeTransition
 
 # overrided from Transition
 func computeTransitionTime(tempo : int, beats_per_bar : int) -> Array:
@@ -25,16 +26,16 @@ func initTransitionTween(fade_in : bool, bus_name : String, transition_time : Ar
 		tween = custom_tween
 	if(fade_in): # fade in
 		var _val = tween.interpolate_property(
-					AudioServer.get_bus_effect(AudioServer.get_bus_index(bus_name), effects.filter),
-					"cutoff_hz",
-					10,
-					20000,
+					AudioServer.get_bus_effect(AudioServer.get_bus_index(bus_name),effects.amplifier),
+					"volume_db",
+					-50.0,
+					0,
 					transition_time[0])
 	else: # fade out
 		var _val = tween.interpolate_property(
-					AudioServer.get_bus_effect(AudioServer.get_bus_index(bus_name), effects.filter),
-					"cutoff_hz",
-					AudioServer.get_bus_effect(AudioServer.get_bus_index(bus_name), effects.filter).cutoff_hz,
-					10,
+					AudioServer.get_bus_effect(AudioServer.get_bus_index(bus_name),effects.amplifier),
+					"volume_db",
+					AudioServer.get_bus_effect(AudioServer.get_bus_index(bus_name), effects.amplifier).volume_db,
+					-50.0,
 					transition_time[1])
 	return tween

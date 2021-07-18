@@ -1,6 +1,6 @@
-extends TransitionTemplate
+extends Transition
 
-# overrided from TransitionTemplate
+# overrided from Transition
 func computeTransitionTime(tempo : int, beats_per_bar : int) -> Array:
 	var transition_time = [0,0]
 	# computes the fade time
@@ -16,7 +16,7 @@ func computeTransitionTime(tempo : int, beats_per_bar : int) -> Array:
 			transition_time[1] = FADE_OUT_TIME * (60.0 / tempo) * beats_per_bar
 	return transition_time
 
-# overrided from TransitionTemplate
+# overrided from Transition
 func initTransitionTween(fade_in : bool, bus_name : String, transition_time : Array, effects : Dictionary, custom_tween : Tween = null) -> Tween:
 	var tween : Tween
 	if(custom_tween == null):

@@ -1,3 +1,4 @@
+tool # for test purposes
 extends Node
 class_name MainMixingDesk
 

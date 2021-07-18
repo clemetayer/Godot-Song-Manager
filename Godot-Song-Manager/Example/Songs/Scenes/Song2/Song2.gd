@@ -1,1 +1,1 @@
-extends SongTemplate
+extends Song

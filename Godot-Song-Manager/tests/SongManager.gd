@@ -1,3 +1,4 @@
+tool # for debug purposes
 extends Node
 
 # (kind of) inspired from Godot mixing desk : https://github.com/kyzfrintin/Godot-Mixing-Desk
@@ -8,10 +9,13 @@ enum effects {amplifier,filter}
 
 signal song_changed(old_song,new_song)
 
+export(NodePath) var MIXING_DESK
+
 var queue = []
 var bus_array = []
 var switch_song_lock = false
 var current_song : Song
+onready var mixing_desk : MainMixingDesk = get_node(MIXING_DESK)
 
 ##### USER FUNCTIONS #####
 
@@ -20,7 +24,6 @@ func addSongToQueue(song : Song, transition : Transition) -> void:
 	queue.append({"song":song,"transition":transition})
 
 ##### CUSTOMIZABLE FUNCTIONS #####
-
 # creates a temporary bus to handle transitionning tracks
 func createTransitionBus(name : String, send_to : String) -> String:
 	var bus_index = AudioServer.bus_count # Note : bus indexes starts at 0
@@ -46,7 +49,7 @@ func handleQueue() -> void:
 
 # updates if necessary the current song playing (especially if new tracks should be playing)
 func updateSong(song : Song, transition : Transition):
-	var diff_tracks = $MainMixingDesk.compareSongsPlayValues(song,$MainMixingDesk.getCurrent())
+	var diff_tracks = mixing_desk.compareSongsPlayValues(song,mixing_desk.getCurrent())
 	for track in diff_tracks:
 		updateTrack(song,track,transition,getBusTrack(track))
 		current_song.setPlay(track,song.isPlaying(track))
@@ -62,7 +65,7 @@ func updateTrack(song : Song, track : String, transition : Transition, transitio
 	if(play): # should transition in
 		var transition_time = transition.computeTransitionTime(song.BPM,song.BEATS_PER_BAR)
 		tween = transition.initTransitionTween(true,transition_bus_name,transition_time,effects)
-		$MainMixingDesk.startTrack(track)
+		mixing_desk.startTrack(track)
 	else: # should transition out
 		var transition_time = transition.computeTransitionTime(song.BPM,song.BEATS_PER_BAR)
 		tween = transition.initTransitionTween(false,transition_bus_name,transition_time,effects)
@@ -71,7 +74,7 @@ func updateTrack(song : Song, track : String, transition : Transition, transitio
 	yield(tween,"tween_all_completed") # waits for the fade in/out to finish
 	tween.queue_free()
 	if(not play): # it was a transition in
-		$MainMixingDesk.stopTrack(track)
+		mixing_desk.stopTrack(track)
 
 # skips to the next song with specific transition type
 func switchSong(song : Song, transition : Transition) -> void :
@@ -96,7 +99,7 @@ func removeSongs(transition : Transition) -> void:
 	var _val = tween.start()
 	yield(tween,"tween_all_completed")
 	tween.queue_free()
-	$MainMixingDesk.freeCurrent()
+	mixing_desk.freeCurrent()
 	for bus in bus_array:
 		AudioServer.remove_bus(AudioServer.get_bus_index(bus.busName))
 	bus_array = []
@@ -123,13 +126,13 @@ func addSong(song : Song, transition : Transition) -> void:
 	redirectTracksBusDefault()
 	$Tweens.add_child(tween)
 	var _val = tween.start()
-	$MainMixingDesk.play(song) # duplicates and plays main track
+	mixing_desk.play(song) # duplicates and plays main track
 	yield(tween,"tween_all_completed")
 	tween.queue_free()
 
 # removes the current song with no effect (used in main mixing desk, all tracks are stopped)
 func removeCurrent():
-	$MainMixingDesk.freeCurrent()
+	mixing_desk.freeCurrent()
 	for bus in bus_array:
 		AudioServer.remove_bus(AudioServer.get_bus_index(bus.busName))
 	bus_array = []

@@ -9,26 +9,94 @@
 config_version=4
 
 _global_script_classes=[ {
-"base": "Node",
-"class": "MainTracksTemplate",
+"base": "Transition",
+"class": "FilterTransition",
 "language": "GDScript",
-"path": "res://SongManager/templates/MainTracksTemplate.gd"
+"path": "res://SongManager/templates/Transitions/FilterTransition/FilterTransition.gd"
+}, {
+"base": "Transition",
+"class": "InstantTransition",
+"language": "GDScript",
+"path": "res://SongManager/templates/Transitions/InstantTransition/InstantTransition.gd"
 }, {
 "base": "Node",
-"class": "SongTemplate",
+"class": "MainMixingDesk",
 "language": "GDScript",
-"path": "res://SongManager/templates/SongTemplate.gd"
+"path": "res://tests/MainMixingDesk.gd"
 }, {
 "base": "Node",
-"class": "TransitionTemplate",
+"class": "MainTracks",
 "language": "GDScript",
-"path": "res://SongManager/templates/TransitionTemplate.gd"
+"path": "res://SongManager/templates/MainTracks.gd"
+}, {
+"base": "Node",
+"class": "Song",
+"language": "GDScript",
+"path": "res://SongManager/templates/Song.gd"
+}, {
+"base": "Node",
+"class": "Transition",
+"language": "GDScript",
+"path": "res://SongManager/templates/Transitions/Transition.gd"
+}, {
+"base": "",
+"class": "TransitionFilterUTest",
+"language": "GDScript",
+"path": "res://tests/Transitions/FilterTransition.test.gd"
+}, {
+"base": "",
+"class": "TransitionUTest",
+"language": "GDScript",
+"path": "res://tests/Transitions/Transition.test.gd"
+}, {
+"base": "",
+"class": "TransitionVolumeUTest",
+"language": "GDScript",
+"path": "res://tests/Transitions/VolumeTransition.test.gd"
+}, {
+"base": "Transition",
+"class": "VolumeTransition",
+"language": "GDScript",
+"path": "res://SongManager/templates/Transitions/VolumeTransition/VolumeTransition.gd"
+}, {
+"base": "Reference",
+"class": "WAT",
+"language": "GDScript",
+"path": "res://addons/WAT/namespace.gd"
+}, {
+"base": "Node",
+"class": "WATTest",
+"language": "GDScript",
+"path": "res://addons/WAT/core/test/test.gd"
 } ]
 _global_script_class_icons={
-"MainTracksTemplate": "",
-"SongTemplate": "",
-"TransitionTemplate": ""
+"FilterTransition": "",
+"InstantTransition": "",
+"MainMixingDesk": "",
+"MainTracks": "",
+"Song": "",
+"Transition": "",
+"TransitionFilterUTest": "",
+"TransitionUTest": "",
+"TransitionVolumeUTest": "",
+"VolumeTransition": "",
+"WAT": "",
+"WATTest": ""
 }
+
+[WAT]
+
+Test_Directory="res://tests"
+Results_Directory="res://tests"
+Test_Metadata_Directory="res://tests"
+Tags=PoolStringArray(  )
+Window_Size=Vector2( 1280, 720 )
+Minimize_Window_When_Running_Tests=false
+Port=6008
+Run_All_Tests=Object(InputEventKey,"resource_local_to_scene":false,"resource_name":"","device":0,"alt":false,"shift":false,"control":false,"meta":false,"command":false,"pressed":false,"scancode":0,"unicode":0,"echo":false,"script":null)
+
+Auto_Refresh_Tests=false
+Display=8
 
 [application]
 
@@ -37,7 +105,7 @@ config/icon="res://icon.png"
 
 [editor_plugins]
 
-enabled=PoolStringArray(  )
+enabled=PoolStringArray( "res://addons/WAT/plugin.cfg" )
 
 [physics]
 

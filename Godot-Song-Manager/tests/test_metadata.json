@@ -1,0 +1,44 @@
+{
+	"res://tests/MainMixingDesk.test.gd": {
+		"path": "res://tests/MainMixingDesk.test.gd",
+		"tags": [
+
+		],
+		"passing": true
+	},
+	"res://tests/MainTracks.test.gd": {
+		"path": "res://tests/MainTracks.test.gd",
+		"tags": [
+
+		],
+		"passing": true
+	},
+	"res://tests/Song.test.gd": {
+		"path": "res://tests/Song.test.gd",
+		"tags": [
+
+		],
+		"passing": true
+	},
+	"res://tests/SongManager.test.gd": {
+		"path": "res://tests/SongManager.test.gd",
+		"tags": [
+
+		],
+		"passing": true
+	},
+	"res://tests/Transitions/FilterTransition.test.gd": {
+		"path": "res://tests/Transitions/FilterTransition.test.gd",
+		"tags": [
+
+		],
+		"passing": false
+	},
+	"res://tests/Transitions/Transition.test.gd": {
+		"path": "res://tests/Transitions/Transition.test.gd",
+		"tags": [
+
+		],
+		"passing": true
+	}
+}

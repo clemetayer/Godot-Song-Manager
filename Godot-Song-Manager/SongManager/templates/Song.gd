@@ -1,5 +1,5 @@
 extends Node
-class_name SongTemplate
+class_name Song
 
 export(int) var BPM
 export(int) var BEATS_PER_BAR # or time signature (4,3,2 are the most common)
@@ -54,7 +54,7 @@ func startTrack(track:String) -> void:
 	get_node(MAIN_TRACKS).startTrack(track)
 
 # compares the play values of self, compared to a similar Default Song. Returns an array of tracks that have different play values (as strings)
-func compareSongsPlayValues(song : SongTemplate) -> Array:
+func compareSongsPlayValues(song : Song) -> Array:
 	var diff_array = []
 	for index in range(get_node(MAIN_TRACKS).TRACKS.size()):
 		if(get_node(MAIN_TRACKS).TRACKS[index].play != song.get_node(song.MAIN_TRACKS).TRACKS[index].play):

@@ -1,6 +1,6 @@
 tool
 extends Node
-class_name MainTracksTemplate
+class_name MainTracks
 
 
 var playing = false

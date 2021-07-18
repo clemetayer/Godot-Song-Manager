@@ -1,0 +1,39 @@
+[gd_scene load_steps=6 format=2]
+
+[ext_resource path="res://tests/Songs/Song2/Song2.gd" type="Script" id=1]
+[ext_resource path="res://tests/Songs/Song2/MainTracks.gd" type="Script" id=2]
+[ext_resource path="res://Example/Songs/Resources/Song2/Bass.wav" type="AudioStream" id=3]
+[ext_resource path="res://Example/Songs/Resources/Song2/Drums.wav" type="AudioStream" id=4]
+[ext_resource path="res://Example/Songs/Resources/Song2/Chords.wav" type="AudioStream" id=5]
+
+[node name="Song2" type="Node"]
+script = ExtResource( 1 )
+BPM = 120
+BEATS_PER_BAR = 3
+MAIN_TRACKS = NodePath("MainTracks")
+NAME = "Song2"
+
+[node name="MainTracks" type="Node" parent="."]
+script = ExtResource( 2 )
+TRACKS = [ {
+"name": "Chords",
+"play": false,
+"references": [ NodePath("Bass"), NodePath("Drums") ]
+}, {
+"name": "Bass",
+"play": false,
+"references": [ NodePath("Chords"), NodePath("Drums") ]
+}, {
+"name": "Drums",
+"play": false,
+"references": [ NodePath("Chords"), NodePath("Bass") ]
+} ]
+
+[node name="Chords" type="AudioStreamPlayer" parent="MainTracks"]
+stream = ExtResource( 5 )
+
+[node name="Bass" type="AudioStreamPlayer" parent="MainTracks"]
+stream = ExtResource( 3 )
+
+[node name="Drums" type="AudioStreamPlayer" parent="MainTracks"]
+stream = ExtResource( 4 )

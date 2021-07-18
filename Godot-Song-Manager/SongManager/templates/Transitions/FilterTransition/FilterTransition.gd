@@ -1,4 +1,5 @@
 extends Transition
+class_name FilterTransition
 
 # overrided from Transition
 func computeTransitionTime(tempo : int, beats_per_bar : int) -> Array:

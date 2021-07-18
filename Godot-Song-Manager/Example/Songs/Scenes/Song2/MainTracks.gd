@@ -1,2 +1,2 @@
 tool
-extends MainTracksTemplate
+extends MainTracks

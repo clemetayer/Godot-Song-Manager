@@ -14,7 +14,7 @@ var check_lock = false # to avoid triggering the "checked"
 
 ##### BUTTONS SIGNALS #####
 func _on_Song1Button_pressed():
-	var song : SongTemplate = load(SONG_1_PATH).instance()
+	var song : Song = load(SONG_1_PATH).instance()
 	var tracks = song.getTrackList()
 	for child in $Menu/Center/VSplit/Songs/Song2/Checks.get_children(): # unchecks everything in other song
 		check_lock = true
@@ -35,7 +35,7 @@ func _on_Song1Button_pressed():
 	$SongManager.addSongToQueue(song, transition)
 
 func _on_Song2Button_pressed():
-	var song : SongTemplate = load(SONG_2_PATH).instance()
+	var song : Song = load(SONG_2_PATH).instance()
 	var tracks = song.getTrackList()
 	for child in $Menu/Center/VSplit/Songs/Song1/Checks.get_children():
 		check_lock = true
@@ -60,7 +60,7 @@ func _on_Song1Chords_toggled(button_pressed):
 		for child in $Menu/Center/VSplit/Songs/Song2/Checks.get_children(): # unchecks everything in other song
 			check_lock = true
 			child.pressed = false
-		var song : SongTemplate = load(SONG_1_PATH).instance()
+		var song : Song = load(SONG_1_PATH).instance()
 		check_lock = false
 		song.setPlay("Chords",button_pressed)
 		song.setPlay("Bass",$Menu/Center/VSplit/Songs/Song1/Checks/Song1Bass.pressed)
@@ -75,7 +75,7 @@ func _on_Song1Bass_toggled(button_pressed):
 		for child in $Menu/Center/VSplit/Songs/Song2/Checks.get_children(): # unchecks everything in other song
 			check_lock = true
 			child.pressed = false
-		var song : SongTemplate = load(SONG_1_PATH).instance()
+		var song : Song = load(SONG_1_PATH).instance()
 		check_lock = false
 		song.setPlay("Chords",$Menu/Center/VSplit/Songs/Song1/Checks/Song1Chords.pressed)
 		song.setPlay("Bass",button_pressed)
@@ -90,7 +90,7 @@ func _on_Song1Arpeggio_toggled(button_pressed):
 		for child in $Menu/Center/VSplit/Songs/Song2/Checks.get_children(): # unchecks everything in other song
 			check_lock = true
 			child.pressed = false
-		var song : SongTemplate = load(SONG_1_PATH).instance()
+		var song : Song = load(SONG_1_PATH).instance()
 		check_lock = false
 		song.setPlay("Chords",$Menu/Center/VSplit/Songs/Song1/Checks/Song1Chords.pressed)
 		song.setPlay("Bass",$Menu/Center/VSplit/Songs/Song1/Checks/Song1Bass.pressed)
@@ -105,7 +105,7 @@ func _on_Song2Chords_toggled(button_pressed):
 		for child in $Menu/Center/VSplit/Songs/Song1/Checks.get_children(): # unchecks everything in other song
 			check_lock = true
 			child.pressed = false
-		var song : SongTemplate = load(SONG_2_PATH).instance()
+		var song : Song = load(SONG_2_PATH).instance()
 		check_lock = false
 		song.setPlay("Chords",button_pressed)
 		song.setPlay("Bass",$Menu/Center/VSplit/Songs/Song2/Checks/Song2Bass.pressed)
@@ -120,7 +120,7 @@ func _on_Song2Bass_toggled(button_pressed):
 		for child in $Menu/Center/VSplit/Songs/Song1/Checks.get_children(): # unchecks everything in other song
 			check_lock = true
 			child.pressed = false
-		var song : SongTemplate = load(SONG_2_PATH).instance()
+		var song : Song = load(SONG_2_PATH).instance()
 		check_lock = false
 		song.setPlay("Chords",$Menu/Center/VSplit/Songs/Song2/Checks/Song2Chords.pressed)
 		song.setPlay("Bass",button_pressed)
@@ -135,7 +135,7 @@ func _on_Song2Drums_toggled(button_pressed):
 		for child in $Menu/Center/VSplit/Songs/Song1/Checks.get_children(): # unchecks everything in other song
 			check_lock = true
 			child.pressed = false
-		var song : SongTemplate = load(SONG_2_PATH).instance()
+		var song : Song = load(SONG_2_PATH).instance()
 		check_lock = false
 		song.setPlay("Chords",$Menu/Center/VSplit/Songs/Song2/Checks/Song2Chords.pressed)
 		song.setPlay("Bass",$Menu/Center/VSplit/Songs/Song2/Checks/Song2Bass.pressed)
@@ -148,8 +148,8 @@ func _on_Song2Drums_toggled(button_pressed):
 ##### FUNCTIONS #####
 
 # returns the appropriate transition
-func getTransition() -> TransitionTemplate:
-	var transition : TransitionTemplate
+func getTransition() -> Transition:
+	var transition : Transition
 	match($Menu/Center/VSplit/Transitions/TransitionType.selected):
 		0: # filter
 			transition = load(FILTER_TRANSITION).instance()
@@ -163,7 +163,7 @@ func getTransition() -> TransitionTemplate:
 	return transition
 
 # sets the time unit in the transition
-func setTransitionTimeUnit(transition : TransitionTemplate):
+func setTransitionTimeUnit(transition : Transition):
 	match($Menu/Center/VSplit/Transitions/TransitionTimeType.selected):
 		0: # seconds
 			transition.TIME_TYPE = transition.time_type.time
@@ -173,7 +173,7 @@ func setTransitionTimeUnit(transition : TransitionTemplate):
 			transition.TIME_TYPE = transition.time_type.bar
 
 # sets a wait for next beat/bar if needed
-func setTransitionWait(transition : TransitionTemplate):
+func setTransitionWait(transition : Transition):
 	match($Menu/Center/VSplit/Transitions/TransitionWait.selected):
 		0: # no wait
 			pass
@@ -183,6 +183,6 @@ func setTransitionWait(transition : TransitionTemplate):
 			transition.WAIT_NEXT_BAR = true
 
 # sets the fade in/out of transition
-func setTransitionTimes(transition : TransitionTemplate):
+func setTransitionTimes(transition : Transition):
 	transition.FADE_IN_TIME = $Menu/Center/VSplit/Transitions/CenterTimes/Times/StartTime.value
 	transition.FADE_OUT_TIME = $Menu/Center/VSplit/Transitions/CenterTimes/Times/EndTime.value

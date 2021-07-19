@@ -32,10 +32,17 @@
 		"tags": [
 
 		],
-		"passing": false
+		"passing": true
 	},
 	"res://tests/Transitions/Transition.test.gd": {
 		"path": "res://tests/Transitions/Transition.test.gd",
+		"tags": [
+
+		],
+		"passing": true
+	},
+	"res://tests/Transitions/VolumeTransition.test.gd": {
+		"path": "res://tests/Transitions/VolumeTransition.test.gd",
 		"tags": [
 
 		],

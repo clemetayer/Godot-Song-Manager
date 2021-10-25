@@ -1,8 +1,10 @@
 <?xml version="1.0" ?>
-<testsuites failures="0" name="TestXML" tests="1" time="0">
-	<testsuite name="Test of the volume transition" failures="0"  tests="2" time="0">
-		<testcase name="Test of the transition tween" time="0"></testcase>
-		<testcase name="Test of the computeTransitionTime function" time="0"></testcase>
+<testsuites failures="1" name="TestXML" tests="1" time="0.077">
+	<testsuite name="Test of the song animation player" failures="4"  tests="4" time="0">
+		<testcase name=" play" time="0"></testcase>
+		<testcase name=" update" time="0"></testcase>
+		<testcase name=" stop song" time="0"></testcase>
+		<testcase name=" init" time="0"></testcase>
 	</testsuite>
 
 </testsuites>

@@ -1,39 +1,149 @@
-[gd_scene load_steps=6 format=2]
+[gd_scene load_steps=9 format=2]
 
-[ext_resource path="res://Example/Songs/Scenes/Song1/Song1.gd" type="Script" id=1]
-[ext_resource path="res://Example/Songs/Scenes/Song1/MainTracks.gd" type="Script" id=2]
+[ext_resource path="res://SongManager/templates/Songs/SongAnimationPlayer/song_animation_player.gd" type="Script" id=1]
+[ext_resource path="res://Example/Songs/Resources/Song1/Bass.wav" type="AudioStream" id=2]
 [ext_resource path="res://Example/Songs/Resources/Song1/Chords.wav" type="AudioStream" id=3]
-[ext_resource path="res://Example/Songs/Resources/Song1/Bass.wav" type="AudioStream" id=4]
-[ext_resource path="res://Example/Songs/Resources/Song1/Arpeggio.wav" type="AudioStream" id=5]
+[ext_resource path="res://Example/Songs/Resources/Song1/Arpeggio.wav" type="AudioStream" id=4]
+
+[sub_resource type="Animation" id=1]
+resource_name = "All"
+length = 13.7
+tracks/0/type = "value"
+tracks/0/path = NodePath("Arpeggio:playing")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/keys = {
+"times": PoolRealArray( 0 ),
+"transitions": PoolRealArray( 1 ),
+"update": 1,
+"values": [ true ]
+}
+tracks/1/type = "value"
+tracks/1/path = NodePath("Chords:playing")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/keys = {
+"times": PoolRealArray( 0, 6.8 ),
+"transitions": PoolRealArray( 1, 1 ),
+"update": 1,
+"values": [ true, false ]
+}
+tracks/2/type = "value"
+tracks/2/path = NodePath("Bass:playing")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/keys = {
+"times": PoolRealArray( 0, 6.8 ),
+"transitions": PoolRealArray( 1, 1 ),
+"update": 1,
+"values": [ true, true ]
+}
+
+[sub_resource type="Animation" id=2]
+length = 13.7
+loop = true
+tracks/0/type = "value"
+tracks/0/path = NodePath("Arpeggio:playing")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/keys = {
+"times": PoolRealArray( 0 ),
+"transitions": PoolRealArray( 1 ),
+"update": 1,
+"values": [ true ]
+}
+tracks/1/type = "value"
+tracks/1/path = NodePath("Bass:playing")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/keys = {
+"times": PoolRealArray( 0, 6.9 ),
+"transitions": PoolRealArray( 1, 1 ),
+"update": 1,
+"values": [ true, false ]
+}
+
+[sub_resource type="Animation" id=3]
+length = 13.7
+loop = true
+tracks/0/type = "value"
+tracks/0/path = NodePath("Chords:playing")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/keys = {
+"times": PoolRealArray( 0, 6.9 ),
+"transitions": PoolRealArray( 1, 1 ),
+"update": 1,
+"values": [ true, false ]
+}
+tracks/1/type = "value"
+tracks/1/path = NodePath("Arpeggio:playing")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/keys = {
+"times": PoolRealArray( 0 ),
+"transitions": PoolRealArray( 1 ),
+"update": 1,
+"values": [ true ]
+}
+
+[sub_resource type="Animation" id=4]
+length = 6.85
+loop = true
+tracks/0/type = "value"
+tracks/0/path = NodePath("Chords:playing")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/keys = {
+"times": PoolRealArray( 0 ),
+"transitions": PoolRealArray( 1 ),
+"update": 1,
+"values": [ true ]
+}
+tracks/1/type = "value"
+tracks/1/path = NodePath("Bass:playing")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/keys = {
+"times": PoolRealArray( 0 ),
+"transitions": PoolRealArray( 1 ),
+"update": 1,
+"values": [ true ]
+}
 
 [node name="Song1" type="Node"]
 script = ExtResource( 1 )
-BPM = 140
-BEATS_PER_BAR = 4
-MAIN_TRACKS = NodePath("MainTracks")
-NAME = "Song1"
+ANIMATION_PLAYER = NodePath("AnimationPlayer")
 
-[node name="MainTracks" type="Node" parent="."]
-script = ExtResource( 2 )
-TRACKS = [ {
-"name": "Chords",
-"play": false,
-"references": [ NodePath("Arpeggio"), NodePath("Bass") ]
-}, {
-"name": "Arpeggio",
-"play": false,
-"references": [ NodePath("Chords"), NodePath("Bass") ]
-}, {
-"name": "Bass",
-"play": false,
-"references": [ NodePath("Chords"), NodePath("Arpeggio") ]
-} ]
+[node name="Arpeggio" type="AudioStreamPlayer" parent="."]
+stream = ExtResource( 4 )
 
-[node name="Chords" type="AudioStreamPlayer" parent="MainTracks"]
+[node name="Chords" type="AudioStreamPlayer" parent="."]
 stream = ExtResource( 3 )
 
-[node name="Arpeggio" type="AudioStreamPlayer" parent="MainTracks"]
-stream = ExtResource( 5 )
+[node name="Bass" type="AudioStreamPlayer" parent="."]
+stream = ExtResource( 2 )
 
-[node name="Bass" type="AudioStreamPlayer" parent="MainTracks"]
-stream = ExtResource( 4 )
+[node name="AnimationPlayer" type="AnimationPlayer" parent="."]
+anims/All = SubResource( 1 )
+anims/ArpeggioBass = SubResource( 2 )
+anims/ArpeggioChords = SubResource( 3 )
+anims/ChordsBass = SubResource( 4 )

@@ -5,184 +5,163 @@ extends Node2D
 export(String, FILE) var SONG_1_PATH = "res://Example/Songs/Scenes/Song1/Song1.tscn"
 export(String, FILE) var SONG_2_PATH = "res://Example/Songs/Scenes/Song2/Song2.tscn"
 # transitions
-export(String, FILE) var FILTER_TRANSITION = "res://Example/Transitions/FilterTransition/FilterTransition.tscn"
-export(String, FILE) var INSTANT_TRANSITION = "res://Example/Transitions/InstantTransition/InstantTransition.tscn"
-export(String, FILE) var VOLUME_TRANSITION = "res://Example/Transitions/VolumeTransition/VolumeTransition.tscn"
+export(String, FILE) var FILTER_EFFECT = "res://SongManager/templates/EffectManagers/FilterEffectManager/filter_effect_manager.gd"
+export(String, FILE) var INSTANT_TRANSITION = "res://SongManager/templates/EffectManagers/InstantEffectManager/instant_effect_manager.gd"
+export(String, FILE) var VOLUME_TRANSITION = "res://SongManager/templates/EffectManagers/VolumeEffectManager/volume_effect_manager.gd"
 
 ##### SCRIPT VARIABLES #####
 var check_lock = false # to avoid triggering the "checked"
+var song1_playing = false
+var song2_playing = false
 
 ##### BUTTONS SIGNALS #####
 func _on_Song1Button_pressed():
-	var song : Song = load(SONG_1_PATH).instance()
-	var tracks = song.getTrackList()
+	check_lock = true
 	for child in $Menu/Center/VSplit/Songs/Song2/Checks.get_children(): # unchecks everything in other song
-		check_lock = true
 		child.pressed = false
-	var uncheck_all = true # if everything is already checked, should uncheck all
+	check_lock = false
+	check_lock = true
 	for check in $Menu/Center/VSplit/Songs/Song1/Checks.get_children():
-		if(not check.pressed):
-			check_lock = true
-			check.pressed = true
-			uncheck_all = false
-	if(uncheck_all):
-		for check in $Menu/Center/VSplit/Songs/Song1/Checks.get_children():
-			check_lock = true
+		if(check.pressed):
 			check.pressed = false
-	for track in tracks:
-		song.setPlay(track.name, not uncheck_all)
+	check_lock = false
+	var song : Song = load(SONG_1_PATH).instance()
+	song.ANIMATION = "All"
 	var transition = getTransition()
-	$SongManager.addSongToQueue(song, transition)
+	if not song1_playing:
+		$StandardSongManager.add_to_queue(song, transition)
+		song1_playing = true
+	else:
+		$StandardSongManager.stop_current(transition)
+		song1_playing = false
+		
 
 func _on_Song2Button_pressed():
-	var song : Song = load(SONG_2_PATH).instance()
-	var tracks = song.getTrackList()
-	for child in $Menu/Center/VSplit/Songs/Song1/Checks.get_children():
-		check_lock = true
+	check_lock = true
+	for child in $Menu/Center/VSplit/Songs/Song1/Checks.get_children(): # unchecks everything in other song
 		child.pressed = false
-	var uncheck_all = true # if everything is already checked, should uncheck all
+	check_lock = false
+	var uncheck_all = true # if everything is already checked, should uncheck all (i.e stop the song)
+	check_lock = true
 	for check in $Menu/Center/VSplit/Songs/Song2/Checks.get_children():
 		if(not check.pressed):
-			check_lock = true
 			check.pressed = true
 			uncheck_all = false
-	if(uncheck_all):
+	check_lock = false
+	if uncheck_all:
+		check_lock = true
 		for check in $Menu/Center/VSplit/Songs/Song2/Checks.get_children():
-			check_lock = true
 			check.pressed = false
-	for track in tracks:
-		song.setPlay(track.name, not uncheck_all)
+		check_lock = false
+	var song : Song = load(SONG_2_PATH).instance()
+	song.init() # using _ready does not work because it did not entered the tree yet
+	for check in $Menu/Center/VSplit/Songs/Song2/Checks.get_children():
+		song._tracks[check.text].play = not uncheck_all
 	var transition = getTransition()
-	$SongManager.addSongToQueue(song, transition)
+	if not uncheck_all:
+		$StandardSongManager.add_to_queue(song, transition)
+		song2_playing = true
+	else:
+		$StandardSongManager.stop_current(transition)
+		song2_playing = false
 
-func _on_Song1Chords_toggled(button_pressed):
+func _on_Song1AB_toggled(button_pressed):
+	if button_pressed:
+		for check in $Menu/Center/VSplit/Songs/Song1/Checks.get_children():
+			if check.pressed and not check.name == "Song1AB":
+				check_lock = true
+				check.pressed = false
+				check_lock = false
+		Song1Check("ArpeggioBass")
+		song1_playing = true
+	else:
+		if not check_lock:
+			$StandardSongManager.stop_current(getTransition())
+			song1_playing = false
+
+
+func _on_Song1AC_toggled(button_pressed):
+	if button_pressed:
+		check_lock = true
+		for check in $Menu/Center/VSplit/Songs/Song1/Checks.get_children():
+			if check.pressed and not check.name == "Song1AC":
+				check.pressed = false
+		check_lock = false
+		Song1Check("ArpeggioChords")
+		song1_playing = true
+	else:
+		if not check_lock:
+			$StandardSongManager.stop_current(getTransition())
+			song1_playing = false
+
+
+func _on_Song1CB_toggled(button_pressed):
+	if button_pressed:
+		check_lock = true
+		for check in $Menu/Center/VSplit/Songs/Song1/Checks.get_children():
+			if check.pressed and not check.name == "Song1CB":
+				check.pressed = false
+		check_lock = false
+		Song1Check("ChordsBass")
+		song1_playing = true
+	else:
+		if not check_lock:
+			$StandardSongManager.stop_current(getTransition())
+			song1_playing = false
+
+func Song1Check(name):
 	if(not check_lock):
+		check_lock = true
 		for child in $Menu/Center/VSplit/Songs/Song2/Checks.get_children(): # unchecks everything in other song
-			check_lock = true
 			child.pressed = false
+		check_lock = false
 		var song : Song = load(SONG_1_PATH).instance()
-		check_lock = false
-		song.setPlay("Chords",button_pressed)
-		song.setPlay("Bass",$Menu/Center/VSplit/Songs/Song1/Checks/Song1Bass.pressed)
-		song.setPlay("Arpeggio",$Menu/Center/VSplit/Songs/Song1/Checks/Song1Arpeggio.pressed)
+		song.ANIMATION = name
 		var transition = getTransition()
-		$SongManager.addSongToQueue(song, transition)
+		$StandardSongManager.add_to_queue(song, transition)
 	else: 
 		check_lock = false
 
-func _on_Song1Bass_toggled(button_pressed):
+func Song2Check(_button_pressed):
 	if(not check_lock):
-		for child in $Menu/Center/VSplit/Songs/Song2/Checks.get_children(): # unchecks everything in other song
-			check_lock = true
-			child.pressed = false
-		var song : Song = load(SONG_1_PATH).instance()
-		check_lock = false
-		song.setPlay("Chords",$Menu/Center/VSplit/Songs/Song1/Checks/Song1Chords.pressed)
-		song.setPlay("Bass",button_pressed)
-		song.setPlay("Arpeggio",$Menu/Center/VSplit/Songs/Song1/Checks/Song1Arpeggio.pressed)
-		var transition = getTransition()
-		$SongManager.addSongToQueue(song, transition)
-	else: 
-		check_lock = false
-
-func _on_Song1Arpeggio_toggled(button_pressed):
-	if(not check_lock):
-		for child in $Menu/Center/VSplit/Songs/Song2/Checks.get_children(): # unchecks everything in other song
-			check_lock = true
-			child.pressed = false
-		var song : Song = load(SONG_1_PATH).instance()
-		check_lock = false
-		song.setPlay("Chords",$Menu/Center/VSplit/Songs/Song1/Checks/Song1Chords.pressed)
-		song.setPlay("Bass",$Menu/Center/VSplit/Songs/Song1/Checks/Song1Bass.pressed)
-		song.setPlay("Arpeggio",button_pressed)
-		var transition = getTransition()
-		$SongManager.addSongToQueue(song, transition)
-	else: 
-		check_lock = false
-
-func _on_Song2Chords_toggled(button_pressed):
-	if(not check_lock):
+		check_lock = true
 		for child in $Menu/Center/VSplit/Songs/Song1/Checks.get_children(): # unchecks everything in other song
-			check_lock = true
 			child.pressed = false
+		check_lock = false
 		var song : Song = load(SONG_2_PATH).instance()
-		check_lock = false
-		song.setPlay("Chords",button_pressed)
-		song.setPlay("Bass",$Menu/Center/VSplit/Songs/Song2/Checks/Song2Bass.pressed)
-		song.setPlay("Drums",$Menu/Center/VSplit/Songs/Song2/Checks/Song2Drums.pressed)
+		song.init() # using _ready does not work because it did not entered the tree yet
+		var stop_song := true # if every checkbox is unchecked, then stop the song
+		for check in $Menu/Center/VSplit/Songs/Song2/Checks.get_children():
+			if check.pressed: # should not stop song
+				stop_song = false
+			song._tracks[check.text].play = check.pressed
 		var transition = getTransition()
-		$SongManager.addSongToQueue(song, transition)
-	else: 
-		check_lock = false
-
-func _on_Song2Bass_toggled(button_pressed):
-	if(not check_lock):
-		for child in $Menu/Center/VSplit/Songs/Song1/Checks.get_children(): # unchecks everything in other song
-			check_lock = true
-			child.pressed = false
-		var song : Song = load(SONG_2_PATH).instance()
-		check_lock = false
-		song.setPlay("Chords",$Menu/Center/VSplit/Songs/Song2/Checks/Song2Chords.pressed)
-		song.setPlay("Bass",button_pressed)
-		song.setPlay("Drums",$Menu/Center/VSplit/Songs/Song2/Checks/Song2Drums.pressed)
-		var transition = getTransition()
-		$SongManager.addSongToQueue(song, transition)
-	else: 
-		check_lock = false
-
-func _on_Song2Drums_toggled(button_pressed):
-	if(not check_lock):
-		for child in $Menu/Center/VSplit/Songs/Song1/Checks.get_children(): # unchecks everything in other song
-			check_lock = true
-			child.pressed = false
-		var song : Song = load(SONG_2_PATH).instance()
-		check_lock = false
-		song.setPlay("Chords",$Menu/Center/VSplit/Songs/Song2/Checks/Song2Chords.pressed)
-		song.setPlay("Bass",$Menu/Center/VSplit/Songs/Song2/Checks/Song2Bass.pressed)
-		song.setPlay("Drums",button_pressed)
-		var transition = getTransition()
-		$SongManager.addSongToQueue(song, transition)
-	else: 
-		check_lock = false
+		if not stop_song:
+			$StandardSongManager.add_to_queue(song, transition)
+			song2_playing = true
+		else:
+			$StandardSongManager.stop_current(transition)
+			song2_playing = false
 
 ##### FUNCTIONS #####
 
 # returns the appropriate transition
-func getTransition() -> Transition:
-	var transition : Transition
-	match($Menu/Center/VSplit/Transitions/TransitionType.selected):
+func getTransition() -> EffectManager:
+	var transition : EffectManager
+	match($Menu/Center/VSplit/Transitions/Transition/Elements/TransitionType.selected):
 		0: # filter
-			transition = load(FILTER_TRANSITION).instance()
+			transition = load(FILTER_EFFECT).new()
 		1: # volume
-			transition = load(VOLUME_TRANSITION).instance()
+			transition = load(VOLUME_TRANSITION).new()
 		2: # instant
-			transition = load(INSTANT_TRANSITION).instance()
-	setTransitionTimeUnit(transition)
-	setTransitionWait(transition)
+			transition = load(INSTANT_TRANSITION).new()
 	setTransitionTimes(transition)
 	return transition
 
-# sets the time unit in the transition
-func setTransitionTimeUnit(transition : Transition):
-	match($Menu/Center/VSplit/Transitions/TransitionTimeType.selected):
-		0: # seconds
-			transition.TIME_TYPE = transition.time_type.time
-		1: # beats
-			transition.TIME_TYPE = transition.time_type.beat
-		2: # bars
-			transition.TIME_TYPE = transition.time_type.bar
-
 # sets a wait for next beat/bar if needed
-func setTransitionWait(transition : Transition):
-	match($Menu/Center/VSplit/Transitions/TransitionWait.selected):
-		0: # no wait
-			pass
-		1: # next beat
-			transition.WAIT_NEXT_BEAT = true
-		2: # next bar
-			transition.WAIT_NEXT_BAR = true
+func setTransitionWait(_effect : EffectManager):
+	pass
 
 # sets the fade in/out of transition
-func setTransitionTimes(transition : Transition):
-	transition.FADE_IN_TIME = $Menu/Center/VSplit/Transitions/CenterTimes/Times/StartTime.value
-	transition.FADE_OUT_TIME = $Menu/Center/VSplit/Transitions/CenterTimes/Times/EndTime.value
+func setTransitionTimes(effect : EffectManager):
+	effect.TIME = $Menu/Center/VSplit/Transitions/Transition/Elements/Time/Time.value

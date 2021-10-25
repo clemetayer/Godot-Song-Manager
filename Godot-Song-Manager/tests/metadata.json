@@ -1,0 +1,5 @@
+{
+	"failed": [
+		"res://tests/SongsTests/song_animation_player.test.gd"
+	]
+}

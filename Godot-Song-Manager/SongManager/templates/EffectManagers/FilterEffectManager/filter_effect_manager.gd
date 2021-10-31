@@ -1,10 +1,13 @@
 extends EffectManager
 class_name FilterEffectManager
 
+##### VARIABLES #####
+#---- STANDARD -----
+var _tween : Tween
+
 ##### PUBLIC METHODS #####
 """
-initializes a tween for the transition, according to an array of parameters specified by the song
-Note : does not start it, just initializes it.
+starts an effect, emits "effect_done" when done
 compatible param :
 {
 	"object":Object,
@@ -14,15 +17,18 @@ compatible param :
 	"fade_in":bool
 }
 """
+func start_effect(params:Array) -> void:
+	_init_tween(params)
+	add_child(_tween)
+	var _err = _tween.start()
+	yield(_tween,"tween_all_completed")
+	emit_signal("effect_done")
 
-
-func init_tween(params: Array) -> void:
-	tween = Tween.new()
+# inits the updating properties array (to cancel the same effects if necessary)
+func init_updating_properties(params:Array) -> void:
 	for param in params:
 		if param.has("type") and param.type == "filter":
-			_add_effect_to_tween(param)
 			updating_properties.append(param)
-
 
 # cancels the effects that are the same as the one specified in parameters
 func cancel_same_effects(effect):
@@ -34,17 +40,24 @@ func cancel_same_effects(effect):
 				and cur_effect.interpolate_value == new_effect.interpolate_value
 				and cur_effect.type == new_effect.type
 			):
-				var _err = tween.stop(cur_effect.object, cur_effect.interpolate_value)
+				var _err = _tween.stop(cur_effect.object, cur_effect.interpolate_value)
 				remove_effect.append(cur_effect)
 		for effect in remove_effect:  # remove the effects that has been cancelled
 			updating_properties.erase(effect)
 
 
 ##### PROTECTED METHODS #####
+# inits the tween depending on the parameters
+func _init_tween(params: Array) -> void:
+	_tween = Tween.new()
+	for param in params:
+		if param.has("type") and param.type == "filter":
+			_add_effect_to_tween(param)
+
 # adds an effect to the tween with the parameter specified
 func _add_effect_to_tween(param: Dictionary):
 	if param.fade_in:
-		var _err = tween.interpolate_property(
+		var _err = _tween.interpolate_property(
 			param.object,
 			param.interpolate_value,
 			0.0,
@@ -54,7 +67,7 @@ func _add_effect_to_tween(param: Dictionary):
 			Tween.EASE_IN
 		)
 	else:
-		var _err = tween.interpolate_property(
+		var _err = _tween.interpolate_property(
 			param.object,
 			param.interpolate_value,
 			param.object[param.interpolate_value],

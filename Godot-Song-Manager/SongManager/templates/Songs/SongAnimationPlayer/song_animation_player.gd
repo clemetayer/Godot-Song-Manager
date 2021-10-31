@@ -16,20 +16,15 @@ class_name SongAnimationPlayer
 enum bus_effects { filter }  # effect indexes in a bus
 
 ##### VARIABLES #####
-#---- CONSTANTS -----
-
 #---- EXPORTS -----
 export (NodePath) var ANIMATION_PLAYER
 export (String) var SONG_SEND_TO = "Master"  # where the song bus should send
 export (String) var ANIMATION # Animation that should play
 
-#---- STANDARD -----
-#==== PUBLIC ====
-
 #==== PRIVATE ====
 var _tracks : Dictionary = {}  # track infos
 var _stop_queue := []
-#==== ONREADY ====
+var _buses_cleared := true # if the buses have been cleared or not
 
 ##### PROCESSING #####
 # Called when the node enters the scene tree for the first time.
@@ -41,12 +36,16 @@ func _ready():
 ##### PUBLIC METHODS #####
 # plays the song, returns an array to give to the EffectManager as a parameter
 func play() -> Array:
+	if _buses_cleared:
+		_init_buses()
 	get_node(ANIMATION_PLAYER).play(ANIMATION)
 	return _get_track_effect_array(name, true)
 
 
 # stops the song, returns an array to give to  the EffectManager as a parameter
 func stop() -> Array:
+	if _buses_cleared:
+		_init_buses()
 	if not get_parent().is_connected("effect_done",self,"_handle_queue_stop"):
 		var _err = get_parent().connect("effect_done", self, "_handle_queue_stop")
 	_stop_queue.push_back([name]) # name just means to stop all tracks, setups the stop of the song
@@ -55,6 +54,8 @@ func stop() -> Array:
 # updates the song to match the one specified in parameters, returns an array to give to  the EffectManager as a parameter
 func update(song: Song) -> Array:
 	var effect_array = []
+	if _buses_cleared:
+		_init_buses()
 	if ANIMATION != song.ANIMATION:
 		var anim_player : AnimationPlayer = get_node(ANIMATION_PLAYER) # shortcut
 		var stop_array = [] # tracks to stop
@@ -85,6 +86,8 @@ func update(song: Song) -> Array:
 # dictionary should look like this : {track1 : {fade_in : bool}, track2 : {fade_in : bool}}
 func get_neutral_effect_data(params : Dictionary) -> Array:
 	var effect_array = []
+	if _buses_cleared:
+		_init_buses()
 	for param in params.keys():
 		if _tracks.has(param):
 			effect_array.append_array(_get_track_effect_array(param,params[param].fade_in))
@@ -127,7 +130,13 @@ func _init_buses():
 			_create_bus("%s:%s" % [name, track_name], name)
 			_tracks[track_name].bus = "%s:%s" % [name, track_name]
 			get_node(_tracks[track_name].path).bus = "%s:%s" % [name, track_name]
+	_buses_cleared = false
 
+# clear the buses used in this song
+func _clear_buses():
+	for track in _tracks.keys():
+		AudioServer.remove_bus(AudioServer.get_bus_index(_tracks[track].bus))
+	_buses_cleared = true
 
 # Creates a bus with a specific name 
 # WARNING : If the bus already exists
@@ -215,6 +224,12 @@ func _handle_queue_stop():
 		else :
 			for track in to_stop:
 				get_node(_tracks[track].path).stop()
+	var should_clear_buses = true
+	for track in get_children():
+		if track is AudioStreamPlayer and track.playing: # not everything is stopped
+			should_clear_buses = false
+	if should_clear_buses:
+		_clear_buses()
 
 ##### DEBUG #####
 # prints the current

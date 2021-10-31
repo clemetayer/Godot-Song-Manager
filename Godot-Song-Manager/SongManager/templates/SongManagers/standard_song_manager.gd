@@ -27,14 +27,14 @@ func add_to_queue(song: Song, effect: EffectManager) -> void:
 func stop_current(effect: EffectManager) -> void:
 	var effect_data := _current_song.stop()
 	if effect != null:
-		effect.init_tween(effect_data)
+		add_child(effect)
+		effect.init_updating_properties(effect_data)
 		_cancel_current_effects(effect)
-		add_child(effect.tween)
-		var _err = effect.tween.start()
 		_current_effects.append(effect)
-		yield(effect.tween, "tween_all_completed")
+		effect.start_effect(effect_data)
+		yield(effect, "effect_done")
 		_current_effects.erase(effect)
-		effect.tween.queue_free()
+		effect.queue_free()
 	_current_song.queue_free()
 	emit_signal("effect_done")
 
@@ -43,12 +43,12 @@ func stop_current(effect: EffectManager) -> void:
 func apply_effect(effect: EffectManager, params = {}) -> void:
 	var effect_data := _current_song.get_neutral_effect_data(params)
 	if effect != null:
-		effect.init_tween(effect_data)
+		add_child(effect)
+		effect.init_updating_properties(effect_data)
 		_cancel_current_effects(effect)
-		add_child(effect.tween)
-		var _err = effect.tween.start()
 		_current_effects.append(effect)
-		yield(effect.tween, "tween_all_completed")
+		effect.start_effect(effect_data)
+		yield(effect, "effect_done")
 		_current_effects.erase(effect)
 		effect.tween.queue_free()
 	emit_signal("effect_done")
@@ -81,13 +81,14 @@ func _play_song(song: Song, effect: EffectManager):
 	var effect_data := song.play()
 	_current_song = song
 	if effect != null:
-		effect.init_tween(effect_data)
-		add_child(effect.tween)
-		var _err = effect.tween.start()
-		_current_effects.append(effect)  # Note : should not be any other effect manager (because nothing was playing before)
-		yield(effect.tween, "tween_all_completed")
+		add_child(effect)
+		effect.init_updating_properties(effect_data)
+		_cancel_current_effects(effect)
+		_current_effects.append(effect)
+		effect.start_effect(effect_data)
+		yield(effect, "effect_done")
 		_current_effects.erase(effect)
-		effect.tween.queue_free()
+		effect.queue_free()
 	emit_signal("effect_done")
 
 
@@ -95,29 +96,30 @@ func _play_song(song: Song, effect: EffectManager):
 func _update_current(song: Song, effect: EffectManager):
 	var effect_data := _current_song.update(song)
 	if effect != null:
-		effect.init_tween(effect_data)
+		add_child(effect)
+		effect.init_updating_properties(effect_data)
 		_cancel_current_effects(effect)
-		add_child(effect.tween)
-		var _err = effect.tween.start()
 		_current_effects.append(effect)
-		yield(effect.tween, "tween_all_completed")
+		effect.start_effect(effect_data)
+		yield(effect, "effect_done")
 		_current_effects.erase(effect)
-		effect.tween.queue_free()
+		effect.queue_free()
 	emit_signal("effect_done")
 
 
 # switches the current song to a new one with an effect
 func _switch_song(song: Song, effect: EffectManager):
 	var effect_data := _current_song.stop()
+	var switch_effect = effect.duplicate() # duplicates the effect, to avoid having an error when re-adding the effet on play
 	if effect != null:
-		effect.init_tween(effect_data)
-		_cancel_current_effects(effect)
-		add_child(effect.tween)
-		var _err = effect.tween.start()
-		_current_effects.append(effect)
-		yield(effect.tween, "tween_all_completed")
-		_current_effects.erase(effect)
-		effect.tween.queue_free()
+		add_child(switch_effect)
+		switch_effect.init_updating_properties(effect_data)
+		_cancel_current_effects(switch_effect)
+		_current_effects.append(switch_effect)
+		switch_effect.start_effect(effect_data)
+		yield(switch_effect, "effect_done")
+		_current_effects.erase(switch_effect)
+		switch_effect.queue_free()
 	emit_signal("effect_done")
 	_current_song.queue_free()
 	_play_song(song, effect)

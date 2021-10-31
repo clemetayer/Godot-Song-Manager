@@ -1,10 +1,62 @@
 <?xml version="1.0" ?>
-<testsuites failures="1" name="TestXML" tests="1" time="0.077">
-	<testsuite name="Test of the song animation player" failures="4"  tests="4" time="0">
-		<testcase name=" play" time="0"></testcase>
-		<testcase name=" update" time="0"></testcase>
-		<testcase name=" stop song" time="0"></testcase>
-		<testcase name=" init" time="0"></testcase>
+<testsuites failures="0" name="TestXML" tests="9" time="8.527">
+	<testsuite name="Test of an instant effect manager" failures="0"  tests="3" time="0">
+		<testcase name="Test of the start effect method" time="0"></testcase>
+		<testcase name="Test of the cancel_same_effects method" time="0"></testcase>
+		<testcase name="Test of the init updating properties method" time="0"></testcase>
+	</testsuite>
+
+	<testsuite name="Test of a standard effect manager" failures="0"  tests="3" time="0">
+		<testcase name="Test of the cancel_same_effects method" time="0"></testcase>
+		<testcase name="Test of the start effect method" time="0"></testcase>
+		<testcase name="Test of the init updating properties method" time="0"></testcase>
+	</testsuite>
+
+	<testsuite name="Test of a song node" failures="0"  tests="3" time="0">
+		<testcase name="Test of the play function" time="0"></testcase>
+		<testcase name="Test of the update function" time="0"></testcase>
+		<testcase name="Test of the stop function" time="0"></testcase>
+	</testsuite>
+
+	<testsuite name="Test of the song manager" failures="0"  tests="4" time="0">
+		<testcase name="Test apply_effect" time="0"></testcase>
+		<testcase name="Test stop_current" time="0"></testcase>
+		<testcase name="Test add_to_queue" time="0"></testcase>
+		<testcase name="Test get_current" time="0"></testcase>
+	</testsuite>
+
+	<testsuite name="Test of the song animation player" failures="0"  tests="4" time="0">
+		<testcase name="Test of the stop function" time="0"></testcase>
+		<testcase name="Test of the play function" time="0"></testcase>
+		<testcase name="Test of the track init" time="0"></testcase>
+		<testcase name="Test of the update function" time="0"></testcase>
+	</testsuite>
+
+	<testsuite name="Test of the simple song implementation" failures="0"  tests="4" time="0">
+		<testcase name="Test of the play function" time="0"></testcase>
+		<testcase name="Test of the track init" time="0"></testcase>
+		<testcase name="Test of the update function" time="0"></testcase>
+		<testcase name="Test of the stop function" time="0"></testcase>
+	</testsuite>
+
+	<testsuite name="Test of the filter effect manager" failures="0"  tests="3" time="0">
+		<testcase name="Test of the cancel_same_effects method" time="0"></testcase>
+		<testcase name="Test of the start effect" time="0"></testcase>
+		<testcase name="Test of the init updating properties method" time="0"></testcase>
+	</testsuite>
+
+	<testsuite name="Test of the volume effect manager" failures="0"  tests="3" time="0">
+		<testcase name="Test of the cancel_same_effects method" time="0"></testcase>
+		<testcase name="Test of the init updating properties method" time="0"></testcase>
+		<testcase name="Test of the start effect" time="0"></testcase>
+	</testsuite>
+
+	<testsuite name="Test of the song manager" failures="0"  tests="5" time="0">
+		<testcase name="Test stop_current" time="0"></testcase>
+		<testcase name="Test apply_effect" time="0"></testcase>
+		<testcase name="Test song update" time="0"></testcase>
+		<testcase name="Test add_to_queue" time="0"></testcase>
+		<testcase name="Test get_current" time="0"></testcase>
 	</testsuite>
 
 </testsuites>

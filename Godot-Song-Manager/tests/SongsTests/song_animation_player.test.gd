@@ -1,9 +1,11 @@
 extends WAT.Test
 # Doc : https://github.com/AlexDarigan/WAT
 
+# Note : should be set in debug mode, because without it, it fails to load the song_anim_player for some reason in normal mode
+
 ##### VARIABLES #####
 var song_animation_player: SongAnimationPlayer
-var song_manager : SongManager
+var song_manager: SongManager
 var song_anim_player_path = "res://Example/Songs/Scenes/Song1/Song1.tscn"
 
 
@@ -13,7 +15,7 @@ func pre():
 	add_child(song_manager)
 	song_animation_player = load(song_anim_player_path).instance()
 	song_manager.add_child(song_animation_player)
-	
+
 
 func post():
 	song_manager.queue_free()
@@ -30,6 +32,17 @@ func reset_song() -> void:
 		if child is AudioStreamPlayer or child is AnimationPlayer:
 			child.stop()
 	song_animation_player._stop_queue = []
+
+
+# return true if the animation has a track
+func anim_has_track(anim_name: String, track: String) -> bool:
+	var anim: Animation = song_animation_player.get_node(song_animation_player.ANIMATION_PLAYER).get_animation(
+		anim_name
+	)
+	for track_idx in range(anim.get_track_count()):
+		if song_animation_player.get_node(anim.track_get_path(track_idx)).name == track:
+			return true
+	return false
 
 
 ##### TEST FUNCTIONS #####
@@ -49,9 +62,7 @@ func test_init() -> void:
 	asserts.is_equal(
 		1,
 		AudioServer.get_bus_effect_count(
-			AudioServer.get_bus_index(
-				song_animation_player._tracks[song_animation_player.name].bus
-			)
+			AudioServer.get_bus_index(song_animation_player._tracks[song_animation_player.name].bus)
 		),
 		"root song bus has 1 effect"
 	)
@@ -89,13 +100,9 @@ func test_init() -> void:
 				"%s path set correctly" % child.name
 			)
 			for anim_name in song_animation_player._tracks[child.name].playing_in_animation:
-				var anim: Animation = song_animation_player.get_node(song_animation_player.ANIMATION_PLAYER).get_animation(
-					anim_name
-				)
-				asserts.is_not_equal(
-					-1,
-					anim.find_track(song_animation_player.get_path_to(child)),
-					"%s is in animation %s" % [child.name, anim_name]
+				asserts.is_true(
+					anim_has_track(anim_name, child.name),
+					"%s has track %s" % [anim_name, child.name]
 				)
 	describe("Test of the track init")
 
@@ -107,39 +114,47 @@ func test_play() -> void:
 	# Test of play All
 	song_animation_player.ANIMATION = "All"
 	var effect_array = song_animation_player.play()
-	asserts.is_equal(
-		effect_array,
-		[
-			{
-				"object": song_animation_player,
-				"interpolate_value": "%s:%s:%s" % ["_tracks", song_animation_player.name, "volume"],
-				"interpolate_type": "property",
-				"type": "volume",
-				"fade_in": true
-			},
-			{
-				"object": song_animation_player,
-				"interpolate_value": "update_volumes",
-				"interpolate_type": "method",
-				"type": "volume",
-				"fade_in": true
-			},
-			{
-				"object":
-				AudioServer.get_bus_effect(
-					AudioServer.get_bus_index(
-						song_animation_player._tracks[song_animation_player.name].bus
-					),
-					song_animation_player.bus_effects.filter
+	var compare_effect_array = [
+		{
+			"object": song_animation_player,
+			"interpolate_value": "%s:%s:%s" % ["_tracks", song_animation_player.name, "volume"],
+			"interpolate_type": "property",
+			"type": "volume",
+			"fade_in": true
+		},
+		{
+			"object": song_animation_player,
+			"interpolate_value": "update_volumes",
+			"interpolate_type": "method",
+			"type": "volume",
+			"fade_in": true
+		},
+		{
+			"object":
+			AudioServer.get_bus_effect(
+				AudioServer.get_bus_index(
+					song_animation_player._tracks[song_animation_player.name].bus
 				),
-				"interpolate_value": "cutoff_hz",
-				"interpolate_type": "property",
-				"type": "filter",
-				"fade_in": true
-			}
-		],
-		"effects sets correctly"
+				song_animation_player.bus_effects.filter
+			),
+			"interpolate_value": "cutoff_hz",
+			"interpolate_type": "property",
+			"type": "filter",
+			"fade_in": true
+		}
+	]
+	asserts.is_equal(
+		effect_array.size(),
+		compare_effect_array.size(),
+		"effect array has the same number of elements"
 	)
+	if effect_array.size() == compare_effect_array.size():
+		var same_effects := true
+		for i in range(effect_array.size()):
+			asserts.is_true(
+				effect_array[i].hash() == compare_effect_array[i].hash(),
+				"item %s is set correctly" % effect_array[i]
+			)
 	asserts.is_true(
 		song_animation_player.get_node(song_animation_player.ANIMATION_PLAYER).is_playing(),
 		"Animation player is playing"
@@ -149,6 +164,7 @@ func test_play() -> void:
 		"All",
 		"Animation All is currently playing"
 	)
+	yield(until_timeout(0.25), YIELD)  # Waits for the play value to be actually set
 	for child in song_animation_player.get_children():
 		if child is AudioStreamPlayer:
 			asserts.is_true(child.playing, "%s is playing" % child.name)
@@ -167,70 +183,82 @@ func test_update() -> void:
 	new_song.ANIMATION = "ArpeggioChords"
 	new_song._ready()
 	var effect_array = song_animation_player.update(new_song)
+	var compare_effect_array = [
+		{
+			"object": song_animation_player,
+			"interpolate_value": "%s:%s:%s" % ["_tracks", "Arpeggio", "volume"],
+			"interpolate_type": "property",
+			"type": "volume",
+			"fade_in": true
+		},
+		{
+			"object": song_animation_player,
+			"interpolate_value": "update_volumes",
+			"interpolate_type": "method",
+			"type": "volume",
+			"fade_in": true
+		},
+		{
+			"object":
+			AudioServer.get_bus_effect(
+				AudioServer.get_bus_index(song_animation_player._tracks["Arpeggio"].bus),
+				song_animation_player.bus_effects.filter
+			),
+			"interpolate_value": "cutoff_hz",
+			"interpolate_type": "property",
+			"type": "filter",
+			"fade_in": true
+		},
+		{
+			"object": song_animation_player,
+			"interpolate_value": "%s:%s:%s" % ["_tracks", "Bass", "volume"],
+			"interpolate_type": "property",
+			"type": "volume",
+			"fade_in": false
+		},
+		{
+			"object": song_animation_player,
+			"interpolate_value": "update_volumes",
+			"interpolate_type": "method",
+			"type": "volume",
+			"fade_in": false
+		},
+		{
+			"object":
+			AudioServer.get_bus_effect(
+				AudioServer.get_bus_index(song_animation_player._tracks["Bass"].bus),
+				song_animation_player.bus_effects.filter
+			),
+			"interpolate_value": "cutoff_hz",
+			"interpolate_type": "property",
+			"type": "filter",
+			"fade_in": false
+		}
+	]
 	asserts.is_equal(
-		effect_array,
-		[
-			{
-				"object": song_animation_player,
-				"interpolate_value": "%s:%s:%s" % ["_tracks", "Arpeggio", "volume"],
-				"interpolate_type": "property",
-				"type": "volume",
-				"fade_in": true
-			},
-			{
-				"object": song_animation_player,
-				"interpolate_value": "update_volumes",
-				"interpolate_type": "method",
-				"type": "volume",
-				"fade_in": true
-			},
-			{
-				"object":
-				AudioServer.get_bus_effect(
-					AudioServer.get_bus_index(song_animation_player._tracks["Arpeggio"].bus),
-					song_animation_player.bus_effects.filter
-				),
-				"interpolate_value": "cutoff_hz",
-				"interpolate_type": "property",
-				"type": "filter",
-				"fade_in": true
-			},
-			{
-				"object": song_animation_player,
-				"interpolate_value": "%s:%s:%s" % ["_tracks", "Bass", "volume"],
-				"interpolate_type": "property",
-				"type": "volume",
-				"fade_in": false
-			},
-			{
-				"object": song_animation_player,
-				"interpolate_value": "update_volumes",
-				"interpolate_type": "method",
-				"type": "volume",
-				"fade_in": false
-			},
-			{
-				"object":
-				AudioServer.get_bus_effect(
-					AudioServer.get_bus_index(song_animation_player._tracks["Bass"].bus),
-					song_animation_player.bus_effects.filter
-				),
-				"interpolate_value": "cutoff_hz",
-				"interpolate_type": "property",
-				"type": "filter",
-				"fade_in": false
-			}
-		],
-		"effects sets correctly"
+		effect_array.size(),
+		compare_effect_array.size(),
+		"effect array has the same number of elements"
 	)
+	if effect_array.size() == compare_effect_array.size():
+		var same_effects := true
+		for i in range(effect_array.size()):
+			asserts.is_true(
+				effect_array[i].hash() == compare_effect_array[i].hash(),
+				"item %s is set correctly" % effect_array[i]
+			)
 	asserts.is_equal(
 		song_animation_player.get_node(song_animation_player.ANIMATION_PLAYER).current_animation,
 		"ArpeggioChords",
 		"Animation ArpeggioChords is currently playing"
 	)
-	asserts.is_true(song_animation_player.get_node("Arpeggio").playing, "%s is playing" % "Arpeggio")
+	song_manager.emit_signal("effect_done")
+	asserts.is_true(
+		song_animation_player.get_node("Arpeggio").playing, "%s is playing" % "Arpeggio"
+	)
 	asserts.is_false(song_animation_player.get_node("Bass").playing, "%s is not playing" % "Bass")
 	describe("Test of the update function")
+
 
 # test of the stop function
 func test_stop_song() -> void:
@@ -240,38 +268,60 @@ func test_stop_song() -> void:
 	song_animation_player.ANIMATION = "All"
 	song_animation_player.play()
 	var effect_array = song_animation_player.stop()
-	asserts.is_equal(
-		effect_array,
-		[
-			{
-				"object": song_animation_player,
-				"interpolate_value": "%s:%s:%s" % ["_tracks", song_animation_player.name, "volume"],
-				"interpolate_type": "property",
-				"type": "volume",
-				"fade_in": false
-			},
-			{
-				"object": song_animation_player,
-				"interpolate_value": "update_volumes",
-				"interpolate_type": "method",
-				"type": "volume",
-				"fade_in": false
-			},
-			{
-				"object":
-				AudioServer.get_bus_effect(
-					AudioServer.get_bus_index(
-						song_animation_player._tracks[song_animation_player.name].bus
-					),
-					song_animation_player.bus_effects.filter
+	var compare_effect_array = [
+		{
+			"object": song_animation_player,
+			"interpolate_value": "%s:%s:%s" % ["_tracks", song_animation_player.name, "volume"],
+			"interpolate_type": "property",
+			"type": "volume",
+			"fade_in": false
+		},
+		{
+			"object": song_animation_player,
+			"interpolate_value": "update_volumes",
+			"interpolate_type": "method",
+			"type": "volume",
+			"fade_in": false
+		},
+		{
+			"object":
+			AudioServer.get_bus_effect(
+				AudioServer.get_bus_index(
+					song_animation_player._tracks[song_animation_player.name].bus
 				),
-				"interpolate_value": "cutoff_hz",
-				"interpolate_type": "property",
-				"type": "filter",
-				"fade_in": false
-			}
-		],
-		"effects sets correctly"
+				song_animation_player.bus_effects.filter
+			),
+			"interpolate_value": "cutoff_hz",
+			"interpolate_type": "property",
+			"type": "filter",
+			"fade_in": false
+		}
+	]
+	asserts.is_equal(
+		effect_array.size(),
+		compare_effect_array.size(),
+		"effect array has the same number of elements"
 	)
-	asserts.is_equal(song_animation_player._stop_queue[0], [song_animation_player.name], "Stop array set correctly")
+	if effect_array.size() == compare_effect_array.size():
+		var same_effects := true
+		for i in range(effect_array.size()):
+			asserts.is_true(
+				effect_array[i].hash() == compare_effect_array[i].hash(),
+				"item %s is set correctly" % effect_array[i]
+			)
+	asserts.is_equal(
+		song_animation_player._stop_queue[0],
+		[song_animation_player.name],
+		"Stop array set correctly"
+	)
+	song_manager.emit_signal("effect_done")
+	for child in song_animation_player.get_children():
+		if child is AudioStreamPlayer:
+			asserts.is_false(child.playing, "%s is stopped" % child.name)
+	for track in song_animation_player._tracks.keys():
+		asserts.is_equal(
+			-1,
+			AudioServer.get_bus_index(song_animation_player._tracks[track].bus),
+			"%s bus was removed" % song_animation_player._tracks[track].bus
+		)
 	describe("Test of the stop function")

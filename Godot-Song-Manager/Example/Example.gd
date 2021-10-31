@@ -54,7 +54,7 @@ func _on_Song2Button_pressed():
 			check.pressed = false
 		check_lock = false
 	var song : Song = load(SONG_2_PATH).instance()
-	song.init() # using _ready does not work because it did not entered the tree yet
+	song.init() # using _ready does not work because it did not has entered the tree yet
 	for check in $Menu/Center/VSplit/Songs/Song2/Checks.get_children():
 		song._tracks[check.text].play = not uncheck_all
 	var transition = getTransition()
